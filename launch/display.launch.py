@@ -49,6 +49,15 @@ def generate_launch_description():
         create_own_container='False',
         use_composition='True',
     )
+    
+    odom_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        name="odom_to_base_link",
+        arguments=["0", "0", "0", "0", "0", "0", "odom", "base_link"],
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+    )
+
 
     spawn_entity = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gz_spawn_model_launch_source),
@@ -59,6 +68,14 @@ def generate_launch_description():
             'z': '0.65',
         }.items(),
     )
+    ekf_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[os.path.join(pkg_share, 'config', 'ekf.yaml')],
+    )
+
 
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='True'),
@@ -69,5 +86,7 @@ def generate_launch_description():
         ros_gz_bridge,
         spawn_entity,
         robot_state_publisher_node,
+        ekf_node,
+        odom_tf,
         rviz_node,
     ])
