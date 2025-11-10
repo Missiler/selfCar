@@ -8,9 +8,9 @@ ekf_node:
     publish_tf: true
 
     map_frame: map
-    odom_frame: odom
-    base_link_frame: base_link
-    world_frame: odom
+    odom_frame: porsche/odom
+    base_link_frame: porsche/base_link
+    world_frame: porsche/odom
 
     odom0: /odom
     odom0_config: [true,  true,  false,
@@ -18,3 +18,6 @@ ekf_node:
                    true,  false, false,
                    false, false, true,
                    false, false, false]
+    odom0_queue_size: 10
+    odom0_differential: false
+    odom0_relative: false
