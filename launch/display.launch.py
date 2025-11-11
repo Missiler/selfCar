@@ -60,7 +60,7 @@ def generate_launch_description():
     default_model_path = os.path.join(pkg_share, 'src','description','porsche_description.sdf')
     default_rviz_config_path = os.path.join(pkg_share, 'rviz', 'config.rviz')
     bridge_config_path = os.path.join(pkg_share, 'config', 'bridge_config.yaml')
-    world_path = os.path.join(pkg_share, 'world', 'my_world.sdf')
+    world_path = os.path.join(pkg_share, 'world', 'wall_world.sdf')
     
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
@@ -103,14 +103,6 @@ def generate_launch_description():
             'z': '0.65',
         }.items(),
     )
-
-    odom_tf = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        name="odom_to_base_link",
-        arguments=["0", "0", "0", "0", "0", "0", "odom", "base_link"],
-        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
-    )
     
     ekf_node = Node(
         package='robot_localization',
@@ -131,5 +123,4 @@ def generate_launch_description():
         ros_gz_bridge,
         spawn_entity,
         ekf_node,
-        #odom_tf,
     ])
