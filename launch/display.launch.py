@@ -111,6 +111,14 @@ def generate_launch_description():
         output='screen',
         parameters=[os.path.join(pkg_share, 'config', 'ekf.yaml')]
     )
+    
+    robot_localization_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_node',
+        output='screen',
+        parameters=[os.path.join(pkg_share, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
+    )
 
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='True'),
@@ -122,5 +130,5 @@ def generate_launch_description():
         gz_server,
         ros_gz_bridge,
         spawn_entity,
-        ekf_node,
+        robot_localization_node
     ])
