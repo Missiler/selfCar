@@ -152,7 +152,7 @@
 
 <!-- Front left steering link -->
 <link name="front_left_steer_link">
-  <pose>${-wheel_xoff} ${base_width/2 + wheel_ygap} ${-wheel_zoff} 0 0 0</pose>
+  <pose relative_to="base_link">${wheel_xoff} ${base_width/2 + wheel_ygap} ${-wheel_zoff} 0 0 0</pose>
   <inertial>
     <mass>0.01</mass>
   </inertial>
@@ -169,7 +169,7 @@
 
 <!-- Front right steering link -->
 <link name="front_right_steer_link">
-  <pose>${-wheel_xoff} ${-(base_width/2 + wheel_ygap)} ${-wheel_zoff} 0 0 0</pose>
+  <pose relative_to="base_link">${wheel_xoff} ${-(base_width/2 + wheel_ygap)} ${-wheel_zoff} 0 0 0</pose>
   <inertial>
     <mass>0.01</mass>
   </inertial>
@@ -217,10 +217,10 @@
 
 
 
-    <xacro:wheel prefix="drivewhl_l_f" x_reflect="-1" y_reflect="1" parent_link="front_left_steer_link"/> 
-    <xacro:wheel prefix="drivewhl_r_f" x_reflect="-1" y_reflect="-1" parent_link="front_right_steer_link"/> 
-    <xacro:wheel prefix="drivewhl_l_r" x_reflect="1" y_reflect="1" parent_link="base_link"/>
-    <xacro:wheel prefix="drivewhl_r_r" x_reflect="1" y_reflect="-1" parent_link="base_link"/>
+    <xacro:wheel prefix="drivewhl_l_f" x_reflect="1" y_reflect="1" parent_link="front_left_steer_link"/> 
+    <xacro:wheel prefix="drivewhl_r_f" x_reflect="1" y_reflect="-1" parent_link="front_right_steer_link"/> 
+    <xacro:wheel prefix="drivewhl_l_r" x_reflect="-1" y_reflect="1" parent_link="base_link"/>
+    <xacro:wheel prefix="drivewhl_r_r" x_reflect="-1" y_reflect="-1" parent_link="base_link"/>
 
 
 
@@ -351,12 +351,12 @@
 
   <!-- Geometry -->
   <wheel_base>0.26</wheel_base>
-  <kingpin_width>0.13</kingpin_width>
+  <kingpin_width>0.12</kingpin_width>
   <wheel_separation>0.16</wheel_separation>
   <wheel_radius>${wheel_radius}</wheel_radius>
 
   <!-- Steering and speed limits -->
-  <steering_limit>0.5</steering_limit>
+  <steering_limit>1</steering_limit>
   <min_velocity>-1</min_velocity>
   <max_velocity>1</max_velocity>
   <min_acceleration>-3</min_acceleration>
