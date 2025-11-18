@@ -10,48 +10,6 @@ from launch.conditions import IfCondition, UnlessCondition
 from nav2_common.launch import RewrittenYaml
 import os
 
-
-'''
-Idag: 
------------------------------------------------------------------------------------------------------------------------------------
-Jag gjort så att det går att updatera kartan:
-I Terminalen:
-
-1: ros2 launch slam_toolbox online_async_launch.py use_sim_time:=true
-2: ros2 launch nav2_bringup navigation_launch.py use_sim_time:=true
-
-I Rviz:
-
-1: Add Panel -> Map
-I map: Välj antingen Global_costmp eller Local_costmap med fixed frame på map.
-Hitta markers:
-Sätt fixed frame på Odom och marker genom by Topic
------------------------------------------------------------------------------------------------------------------------------------
-
-Imorgon:
------------------------------------------------------------------------------------------------------------------------------------
-Skapa ett rum genom att använda tutorialen given av Articulated Robotics i hur man skapar sin egen värld på Gazebo.
-Använd Det rummet som har skapats på Gazebo för att mappa rummet med SLAM.
-MHA: Skapade kartan, implementera en planner så att det går att se en skapad rutt. --> Våran planner är:
-                                https://github.com/ros-navigation/navigation2/tree/main/nav2_smac_planner
-
-Hitta även ett sätt att kontrollera bilen istället för att skriva rakt in i terminalen. Kolla om det går att ändra själva filen så att
-topicen som den skrivs i matchar det vi har i cmd/vel. Y'know.
-
-------------------------------------------------------------------------------------------------------------------------------------
-
-I framtiden:
------------------------------------------------------------------------------------------------------------------------------------
-Hitta en controller som styr själva bilen.
-Blås hela Pi:en
-Fixa Docker så att processeringen går på datorn istället för Pi:en
-Överför så att det funkar på bilen genom att kolla på vilka topics som controllern publishar/Subscribar till -> Konvertera till bil
------------------------------------------------------------------------------------------------------------------------------------
-'''
-
-
-
-
 def generate_launch_description():
     pkg_share = get_package_share_directory('porsche')
     ros_gz_sim_share = get_package_share_directory('ros_gz_sim')
@@ -61,6 +19,9 @@ def generate_launch_description():
     default_rviz_config_path = os.path.join(pkg_share, 'rviz', 'config.rviz')
     bridge_config_path = os.path.join(pkg_share, 'config', 'bridge_config.yaml')
     world_path = os.path.join(pkg_share, 'world', 'wall_world.sdf')
+    nav2_params_path = os.path.join(pkg_share, 'config', 'nav2_params.yaml')
+    map_path = os.path.join(pkg_share, 'world', 'maps','my_map_save.yaml')
+    slam_path = os.path.join(pkg_share,'config','mapper_params_online_async.yaml')
     
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
@@ -104,20 +65,38 @@ def generate_launch_description():
         }.items(),
     )
     
-    ekf_node = Node(
-        package='robot_localization',
-        executable='ekf_node',
-        name='ekf_node',
-        output='screen',
-        parameters=[os.path.join(pkg_share, 'config', 'ekf.yaml')]
-    )
-    
-    robot_localization_node = Node(
+    ekf = Node(
         package='robot_localization',
         executable='ekf_node',
         name='ekf_node',
         output='screen',
         parameters=[os.path.join(pkg_share, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
+    )
+    
+    #Nav2 Nodes
+    
+    nav2_config = RewrittenYaml(
+        source_file=nav2_params_path,
+        root_key='',
+        param_rewrites={'use_sim_time': LaunchConfiguration('use_sim_time')},
+        convert_types=True
+        
+    )
+    
+    nav2_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('nav2_bringup'),
+                'launch',
+                'bringup_launch.py')),
+        launch_arguments={
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+            'params_file': nav2_config,
+            'slam': 'True',   # True = SLAM Toolbox, False = AMCL + map
+            'map': '',
+            'map_server':'False',
+            'mapper_params_file': slam_path
+        }.items()
     )
 
     return LaunchDescription([
@@ -130,5 +109,7 @@ def generate_launch_description():
         gz_server,
         ros_gz_bridge,
         spawn_entity,
-        robot_localization_node
+        ekf,
+        
+        #nav2_bringup
     ])
