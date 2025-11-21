@@ -13,8 +13,9 @@ import os
 def generate_launch_description():
     pkg_share = get_package_share_directory('porsche')
 
-    default_model_path = os.path.join(pkg_share, 'src','description','porsche_description.sdf')
+    default_model_path = os.path.join(pkg_share, 'src','description','porsche_description.urdf')
     default_rviz_config_path = os.path.join(pkg_share, 'rviz', 'config.rviz')
+    nav2_params_path = os.path.join(pkg_share, 'config', 'nav2_params_headless.yaml')
 
     
     robot_state_publisher_node = Node(
@@ -25,23 +26,6 @@ def generate_launch_description():
             {'use_sim_time': LaunchConfiguration('use_sim_time')}
         ]
     )
-
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        output='screen',
-        arguments=['-d', LaunchConfiguration('rvizconfig')],
-    )
-    
-    
-    #SLÄNG IN UWB-modulen som Ekroth fixar s.t: Vi kan köra allt.
-    #UWB_node = Node(
-        #asd
-        #asd
-        #asd
-        #asd
-    #)
     
     ekf = Node(
         package='robot_localization',
@@ -50,6 +34,28 @@ def generate_launch_description():
         output='screen',
         parameters=[os.path.join(pkg_share, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
     )
+    
+
+    nav2_config = RewrittenYaml(
+    source_file=nav2_params_path,
+    root_key='',
+    param_rewrites={'use_sim_time': LaunchConfiguration('use_sim_time')},
+    convert_types=True
+        
+    )
+    
+    nav2_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('nav2_bringup'),
+                'launch',
+                'bringup_launch.py')),
+        launch_arguments={
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+            'params_file': nav2_config,
+        }.items()
+    )
+    
 
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='True'),
@@ -58,6 +64,6 @@ def generate_launch_description():
         ExecuteProcess(cmd=['gz', 'sim', '-g'], output='screen'),
         robot_state_publisher_node,
         #UWB-noden,
-        rviz_node,
         ekf,
+        nav2_bringup
     ])
