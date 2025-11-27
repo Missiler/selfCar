@@ -27,12 +27,27 @@ def generate_launch_description():
         ]
     )
     
-    ekf = Node(
+    filter_node = Node(
         package='robot_localization',
-        executable='ekf_node',
-        name='ekf_node',
+        executable='ukf_filter_node',
+        name='ukf_node',
         output='screen',
         parameters=[os.path.join(pkg_share, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
+    )
+    
+    joint_state_publisher_node = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        parameters=[{'robot_description': Command(['xacro ', default_model_path])}],
+    )
+    
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', LaunchConfiguration('rvizconfig')],
     )
     
 
@@ -58,12 +73,13 @@ def generate_launch_description():
     
 
     return LaunchDescription([
-        DeclareLaunchArgument('use_sim_time', default_value='True'),
+        DeclareLaunchArgument('use_sim_time', default_value='False'),
         DeclareLaunchArgument('model', default_value=default_model_path),
         DeclareLaunchArgument('rvizconfig', default_value=default_rviz_config_path),
         ExecuteProcess(cmd=['gz', 'sim', '-g'], output='screen'),
         robot_state_publisher_node,
+        joint_state_publisher_node,
         #UWB-noden,
-        ekf,
-        nav2_bringup
+        rviz_node,
+        filter_node,
     ])
