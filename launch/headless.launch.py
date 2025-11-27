@@ -29,7 +29,7 @@ def generate_launch_description():
     
     filter_node = Node(
         package='robot_localization',
-        executable='ukf_filter_node',
+        executable='ukf_node',
         name='ukf_node',
         output='screen',
         parameters=[os.path.join(pkg_share, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
