@@ -5,7 +5,7 @@ ukf_filter_node:
     frequency: 30.0
     publish_acceleration: false
     sensor_timeout: 0.1
-    publish_tf: true
+    publish_tf: false
     two_d_mode: true
 
     map_frame: map
