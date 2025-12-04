@@ -16,12 +16,12 @@ slam_toolbox:
     scan_topic: /scan
     use_map_saver: true
     use_sim_time: false
-    mode: localization
+    mode: Localization #mapping  
 
     # if you'd like to immediately start continuing a map at a given pose
     # or at the dock, but they are mutually exclusive, if pose is given
     # will use pose
-    map_file_name: /home/albinovo/ros2_ws/src/porsche/world/maps/kontor_serialize
+    map_file_name: /home/albinovo/ros2_ws/src/porsche/world/maps/kok_serialize
     #map_start_pose: [0.0, 0.0, 0.0]
     #map_start_at_dock: true
 
@@ -44,8 +44,8 @@ slam_toolbox:
     # General Parameters
     use_scan_matching: true
     use_scan_barycenter: true
-    minimum_travel_distance: 0.5
-    minimum_travel_heading: 0.5
+    minimum_travel_distance: 0.2
+    minimum_travel_heading: 0.2
     scan_buffer_size: 10 #innan: 10
     scan_buffer_maximum_scan_distance: 10.0
     link_match_minimum_response_fine: 0.1  

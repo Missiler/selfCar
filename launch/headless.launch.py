@@ -49,28 +49,6 @@ def generate_launch_description():
         output='screen',
         arguments=['-d', LaunchConfiguration('rvizconfig')],
     )
-    
-
-    nav2_config = RewrittenYaml(
-    source_file=nav2_params_path,
-    root_key='',
-    param_rewrites={'use_sim_time': LaunchConfiguration('use_sim_time')},
-    convert_types=True
-        
-    )
-    
-    nav2_bringup = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('nav2_bringup'),
-                'launch',
-                'bringup_launch.py')),
-        launch_arguments={
-            'use_sim_time': LaunchConfiguration('use_sim_time'),
-            'params_file': nav2_config,
-        }.items()
-    )
-    
 
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='False'),
