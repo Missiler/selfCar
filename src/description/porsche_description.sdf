@@ -138,7 +138,7 @@
       <joint name="${prefix}_joint" type="revolute">
         <parent>${parent_link}</parent>
         <child>${prefix}_link</child>
-        <pose relative_to="base_link">${x_reflect*wheel_xoff} ${y_reflect*(base_width/2+wheel_ygap)} ${-wheel_zoff} 0 0 0</pose>
+        <pose relative_to="${parent_link}">0 0 ${-wheel_zoff} 0 0 0</pose>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -152,7 +152,7 @@
 
 <!-- Front left steering link -->
 <link name="front_left_steer_link">
-  <pose relative_to="base_link">${wheel_xoff} ${base_width/2 + wheel_ygap} ${-wheel_zoff} 0 0 0</pose>
+  <pose relative_to="base_link">${wheel_xoff} ${base_width/2 + wheel_ygap} 0 0 0 0</pose>
   <inertial>
     <mass>0.01</mass>
   </inertial>
@@ -169,7 +169,7 @@
 
 <!-- Front right steering link -->
 <link name="front_right_steer_link">
-  <pose relative_to="base_link">${wheel_xoff} ${-(base_width/2 + wheel_ygap)} ${-wheel_zoff} 0 0 0</pose>
+  <pose relative_to="base_link">${wheel_xoff} ${-(base_width/2 + wheel_ygap)} 0 0 0 0</pose>
   <inertial>
     <mass>0.01</mass>
   </inertial>
@@ -414,7 +414,7 @@
   <sensor name="lidar" type="gpu_lidar">
     <always_on>true</always_on>
     <visualize>true</visualize>
-    <update_rate>5</update_rate>
+    <update_rate>20</update_rate>
     <topic>/scan</topic>
     <gz_frame_id>lidar_link</gz_frame_id>
     <ray>
